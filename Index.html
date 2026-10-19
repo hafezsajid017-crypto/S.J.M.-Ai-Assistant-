@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>S.M.J Ai — Your Personal AI Assistant</title>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #050a15;
+      color: #e0f2fe;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* Animated futuristic background */
+    .app-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 20%, #0a1a2f, #03060c);
+      z-index: -2;
+    }
+
+    .app-bg::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 70% 30%, rgba(0, 255, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 20% 70%, rgba(0, 200, 255, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 90% 80%, rgba(0, 255, 128, 0.05) 0%, transparent 40%);
+      animation: pulseBg 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseBg {
+      0% { opacity: 0.6; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.05); }
+    }
+
+    /* Particle simulation (CSS) */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #00ffff;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #00ffff, 0 0 25px #00aaff;
+      animation: floatParticle 20s infinite linear;
+      opacity: 0.4;
+    }
+
+    @keyframes floatParticle {
+      0% { transform: translateY(100vh) translateX(0) scale(1); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-10vh) translateX(40px) scale(0.5); opacity: 0; }
+    }
+
+    /* App container */
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      background: rgba(5, 12, 22, 0.65);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-left: 1px solid rgba(0, 255, 255, 0.15);
+      border-right: 1px solid rgba(0, 255, 255, 0.15);
+      box-shadow: 0 0 60px rgba(0, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+      background: rgba(8, 18, 30, 0.7);
+      backdrop-filter: blur(12px);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .menu-icon {
+      color: #00ffff;
+      font-size: 1.4rem;
+      text-shadow: 0 0 15px #00ffff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .menu-icon:hover { transform: scale(1.1); }
+
+    .brand h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #00ffff, #00ff88, #00aaff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    }
+
+    .brand .tagline {
+      font-size: 0.6rem;
+      color: #8ab4f8;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .online-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(0, 255, 128, 0.15);
+      border: 1px solid rgba(0, 255, 128, 0.4);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 0.6rem;
+      color: #00ff88;
+      text-shadow: 0 0 10px #00ff88;
+    }
+
+    .online-dot {
+      width: 6px;
+      height: 6px;
+      background: #00ff88;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #00ff88;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .premium-badge {
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      border: 1px solid rgba(255, 215, 0, 0.5);
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    .settings-icon {
+      color: #00ffff;
+      font-size: 1.2rem;
+      text-shadow: 0 0 12px #00ffff;
+      cursor: pointer;
+    }
+
+    /* Main scroll area */
+    .main-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 14px 20px;
+      scrollbar-width: thin;
+      scrollbar-color: #00ffff #0a1a2f;
+    }
+
+    .main-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .main-scroll::-webkit-scrollbar-thumb {
+      background: #00ffff;
+      border-radius: 10px;
+    }
+
+    /* AI Card */
+    .ai-card {
+      background: linear-gradient(145deg, rgba(0, 30, 50, 0.8), rgba(0, 15, 25, 0.9));
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 28px;
+      padding: 22px 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.15), inset 0 0 30px rgba(0, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ai-card::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg, transparent, rgba(0, 255, 255, 0.1), transparent 30%);
+      animation: rotateGlow 8s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes rotateGlow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .ai-card-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .greeting {
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff, #a0f0ff, #00ffcc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .sub-greeting {
+      font-size: 0.9rem;
+      color: #9ac7e7;
+      margin-bottom: 18px;
+      opacity: 0.9;
+    }
+
+    /* Mic button */
+    .mic-center {
+      display: flex;
+      justify-content: center;
+      margin: 8px 0 18px;
+    }
+
+    .mic-btn {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #00ffff, #0066cc);
+      border: 3px solid rgba(0, 255, 255, 0.6);
+      box-shadow: 0 0 40px #00ffff, 0 0 80px rgba(0, 255, 255, 0.3), inset 0 0 25px rgba(255, 255, 255, 0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #001a2b;
+      font-size: 2rem;
+      cursor: pointer;
+      transition: 0.3s;
+      animation: micPulse 2s infinite alternate;
+      position: relative;
+    }
+
+    .mic-btn i {
+      text-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+      margin-bottom: 2px;
+    }
+
+    .mic-btn span {
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #001a2b;
+      text-transform: uppercase;
+    }
+
+    @keyframes micPulse {
+      0% { box-shadow: 0 0 30px #00ffff, 0 0 60px rgba(0, 255, 255, 0.3); }
+      100% { box-shadow: 0 0 60px #00ffff, 0 0 120px rgba(0, 255, 255, 0.5); }
+    }
+
+    .mic-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Input row */
+    .input-row {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 25, 45, 0.8);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 40px;
+      padding: 5px 5px 5px 18px;
+      margin-bottom: 14px;
+      box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.05);
+    }
+
+    .input-row input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e0f2fe;
+      font-size: 0.95rem;
+      padding: 12px 0;
+      font-family: inherit;
+    }
+
+    .input-row input::placeholder {
+      color: #5a7d9a;
+      font-weight: 400;
+    }
+
+    .send-btn {
+      background: linear-gradient(135deg, #00ffff, #00aaff);
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #001a2b;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+      transition: 0.2s;
+    }
+
+    .send-btn:active { transform: scale(0.92); }
+
+    /* Action buttons row */
+    .action-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .action-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 25, 45, 0.7);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+      border-radius: 16px;
+      padding: 10px 0;
+      color: #8ab4f8;
+      font-size: 0.7rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.05);
+    }
+
+    .action-btn i {
+      font-size: 1.3rem;
+      color: #00ffff;
+      text-shadow: 0 0 12px #00ffff;
+    }
+
+    .action-btn:hover {
+      background: rgba(0, 40, 70, 0.9);
+      border-color: rgba(0, 255, 255, 0.6);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    }
+
+    /* Section title */
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 18px 0 12px;
+    }
+
+    .section-title h2 {
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      color: #a0e0ff;
+      text-transform: uppercase;
+      font-weight: 600;
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    }
+
+    .section-title span {
+      color: #00ffff;
+      font-size: 0.7rem;
+      cursor: pointer;
+      opacity: 0.8;
+    }
+
+    /* App grid */
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .app-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: rgba(8, 20, 35, 0.8);
+      border: 1px solid rgba(0, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 12px 4px;
+      cursor: pointer;
+      transition: 0.2s;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.03);
+    }
+
+    .app-item:hover {
+      border-color: #00ffff;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .app-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      background: rgba(0, 40, 60, 0.8);
+      box-shadow: 0 0 18px rgba(0, 255, 255, 0.2);
+      color: #00ffff;
+      text-shadow: 0 0 12px #00ffff;
+    }
+
+    .app-name {
+      font-size: 0.6rem;
+      color: #a0c8e0;
+      text-align: center;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    /* Quick commands */
+    .quick-commands {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .command-chip {
+      background: rgba(0, 30, 50, 0.8);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 30px;
+      padding: 8px 16px;
+      font-size: 0.75rem;
+      color: #b0e0ff;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.05);
+      white-space: nowrap;
+    }
+
+    .command-chip i {
+      color: #00ffff;
+      margin-right: 6px;
+      font-size: 0.7rem;
+    }
+
+    .command-chip:hover {
+      background: rgba(0, 60, 90, 0.9);
+      border-color: #00ffff;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 8px 14px;
+      background: rgba(5, 15, 25, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(0, 255, 255, 0.2);
+      box-shadow: 0 -10px 30px rgba(0, 255, 255, 0.05);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #4a6f8a;
+      font-size: 0.55rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: 0.2s;
+      padding: 6px 10px;
+      border-radius: 16px;
+      position: relative;
+    }
+
+    .nav-item i {
+      font-size: 1.3rem;
+      transition: 0.2s;
+    }
+
+    .nav-item.active {
+      color: #00ffff;
+    }
+
+    .nav-item.active i {
+      text-shadow: 0 0 20px #00ffff, 0 0 35px #00ffff;
+      color: #00ffff;
+    }
+
+    .nav-item.active::before {
+      content: "";
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 3px;
+      background: #00ffff;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff;
+    }
+
+    /* Floating notification / toast */
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 30, 50, 0.95);
+      border: 1px solid #00ffff;
+      border-radius: 30px;
+      padding: 12px 24px;
+      color: #00ffff;
+      font-size: 0.8rem;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      animation: slideUp 0.3s ease;
+      white-space: nowrap;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* Utility */
+    .hidden { display: none !important; }
+
+    /* Photo editor preview (simple) */
+    .editor-preview {
+      background: rgba(0, 20, 35, 0.9);
+      border-radius: 20px;
+      padding: 16px;
+      margin-top: 12px;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+
+    .editor-tools {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .tool-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.55rem;
+      color: #8ab4f8;
+      background: rgba(0, 30, 50, 0.6);
+      border-radius: 12px;
+      padding: 8px 4px;
+      border: 1px solid rgba(0, 255, 255, 0.1);
+      cursor: pointer;
+    }
+
+    .tool-item i {
+      font-size: 1.1rem;
+      color: #00ffff;
+    }
+  </style>
+</head>
+<body>
+  <!-- Backgrounds -->
+  <div class="app-bg"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <i class="fas fa-bars menu-icon" onclick="showToast('Menu opened')"></i>
+        <div class="brand">
+          <h1>S.M.J Ai</h1>
+          <div class="tagline">AI Personal Assistant</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="online-badge">
+          <span class="online-dot"></span> Online
+        </div>
+        <div class="premium-badge">PREMIUM</div>
+        <i class="fas fa-cog settings-icon" onclick="showToast('Settings')"></i>
+      </div>
+    </header>
+
+    <!-- Main Scroll Content -->
+    <div class="main-scroll" id="mainScroll">
+      <!-- AI Assistant Card -->
+      <div class="ai-card">
+        <div class="ai-card-content">
+          <div class="greeting">Hello, I’m S.M.J Ai</div>
+          <div class="sub-greeting">How can I help you today?</div>
+
+          <div class="mic-center">
+            <div class="mic-btn" id="micButton" onclick="startVoice()">
+              <i class="fas fa-microphone"></i>
+              <span>TAP TO SPEAK</span>
+            </div>
+          </div>
+
+          <div class="input-row">
+            <input type="text" id="commandInput" placeholder="Ask S.M.J Ai anything..." onkeydown="handleKeyPress(event)">
+            <button class="send-btn" onclick="processCommand()">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+
+          <div class="action-row">
+            <div class="action-btn" onclick="startVoice()">
+              <i class="fas fa-microphone"></i>
+              <span>Voice</span>
+            </div>
+            <div class="action-btn" onclick="showToast('Image picker opened')">
+              <i class="fas fa-image"></i>
+              <span>Image</span>
+            </div>
+            <div class="action-btn" onclick="showToast('Camera opened')">
+              <i class="fas fa-camera"></i>
+              <span>Camera</span>
+            </div>
+            <div class="action-btn" onclick="processCommand()">
+              <i class="fas fa-arrow-right"></i>
+              <span>Send</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Commands -->
+      <div class="section-title">
+        <h2>QUICK COMMANDS</h2>
+        <span>See all</span>
+      </div>
+      <div class="quick-commands">
+        <div class="command-chip" onclick="runQuickCommand('Facebook খুলো')">
+          <i class="fas fa-bolt"></i>Facebook খুলো
+        </div>
+        <div class="command-chip" onclick="runQuickCommand('IMO চালু করো')">
+          <i class="fas fa-bolt"></i>IMO চালু করো
+        </div>
+        <div class="command-chip" onclick="runQuickCommand('YouTube খুলো')">
+          <i class="fas fa-bolt"></i>YouTube খুলো
+        </div>
+        <div class="command-chip" onclick="runQuickCommand('Camera চালু করো')">
+          <i class="fas fa-bolt"></i>Camera চালু করো
+        </div>
+        <div class="command-chip" onclick="runQuickCommand('Gallery খুলো')">
+          <i class="fas fa-bolt"></i>Gallery খুলো
+        </div>
+        <div class="command-chip" onclick="runQuickCommand('Settings খুলো')">
+          <i class="fas fa-bolt"></i>Settings খুলো
+        </div>
+      </div>
+
+      <!-- My Apps Grid -->
+      <div class="section-title">
+        <h2>MY APPS</h2>
+        <span>All</span>
+      </div>
+      <div class="app-grid" id="appGrid">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- App Search -->
+      <div class="section-title" style="margin-top: 20px;">
+        <h2>SEARCH APPS</h2>
+      </div>
+      <div class="input-row" style="margin-bottom: 8px;">
+        <input type="text" id="appSearchInput" placeholder="Search installed apps..." oninput="filterApps()">
+      </div>
+
+      <!-- Photo Editor Preview -->
+      <div class="section-title">
+        <h2>AI PHOTO EDITOR</h2>
+      </div>
+      <div class="editor-preview">
+        <div style="display: flex; gap: 8px; font-size: 0.7rem; color: #a0e0ff;">
+          <i class="fas fa-magic" style="color:#00ffff;"></i> AI Enhance • Remove Object • Background
+        </div>
+        <div class="editor-tools">
+          <div class="tool-item" onclick="showToast('AI Enhance')"><i class="fas fa-magic"></i>Enhance</div>
+          <div class="tool-item" onclick="showToast('Remove Object')"><i class="fas fa-eraser"></i>Remove</div>
+          <div class="tool-item" onclick="showToast('Background Change')"><i class="fas fa-image"></i>BG</div>
+          <div class="tool-item" onclick="showToast('Face Retouch')"><i class="fas fa-face-smile"></i>Face</div>
+          <div class="tool-item" onclick="showToast('Cartoonify')"><i class="fas fa-palette"></i>Toon</div>
+          <div class="tool-item" onclick="showToast('AI Filter')"><i class="fas fa-filter"></i>Filter</div>
+          <div class="tool-item" onclick="showToast('Text to Image')"><i class="fas fa-font"></i>Text2Img</div>
+          <div class="tool-item" onclick="showToast('Image to Image')"><i class="fas fa-images"></i>Img2Img</div>
+        </div>
+      </div>
+
+      <!-- spacer -->
+      <div style="height: 10px;"></div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <div class="nav-item active" onclick="setActiveNav(this, 'Home')">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </div>
+      <div class="nav-item" onclick="setActiveNav(this, 'Edit')">
+        <i class="fas fa-pen"></i>
+        <span>Edit</span>
+      </div>
+      <div class="nav-item" onclick="setActiveNav(this, 'AI')">
+        <i class="fas fa-robot"></i>
+        <span>AI</span>
+      </div>
+      <div class="nav-item" onclick="setActiveNav(this, 'Chat')">
+        <i class="fas fa-comment-dots"></i>
+        <span>Chat</span>
+      </div>
+      <div class="nav-item" onclick="setActiveNav(this, 'Profile')">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toastContainer"></div>
+
+  <script>
+    // ============================================================
+    // SIMULATED INSTALLED APPS (as would be detected via PackageManager)
+    // In a real Android app, this would be dynamic.
+    // ============================================================
+    const installedApps = [
+      { name: 'Facebook', icon: 'fab fa-facebook', color: '#1877F2', package: 'com.facebook.katana' },
+      { name: 'Messenger', icon: 'fab fa-facebook-messenger', color: '#00B2FF', package: 'com.facebook.orca' },
+      { name: 'IMO', icon: 'fas fa-comment', color: '#2E77FF', package: 'com.imo.android.imoim' },
+      { name: 'WhatsApp', icon: 'fab fa-whatsapp', color: '#25D366', package: 'com.whatsapp' },
+      { name: 'YouTube', icon: 'fab fa-youtube', color: '#FF0000', package: 'com.google.android.youtube' },
+      { name: 'TikTok', icon: 'fab fa-tiktok', color: '#ffffff', package: 'com.zhiliaoapp.musically' },
+      { name: 'Instagram', icon: 'fab fa-instagram', color: '#E4405F', package: 'com.instagram.android' },
+      { name: 'Chrome', icon: 'fab fa-chrome', color: '#4285F4', package: 'com.android.chrome' },
+      { name: 'Camera', icon: 'fas fa-camera', color: '#00ffff', package: 'com.android.camera' },
+      { name: 'Gallery', icon: 'fas fa-images', color: '#00ff88', package: 'com.android.gallery3d' },
+      { name: 'Maps', icon: 'fas fa-map', color: '#34A853', package: 'com.google.android.apps.maps' },
+      { name: 'Settings', icon: 'fas fa-cog', color: '#a0a0a0', package: 'com.android.settings' },
+      { name: 'Phone', icon: 'fas fa-phone', color: '#00ff88', package: 'com.android.dialer' },
+      { name: 'Messages', icon: 'fas fa-comment', color: '#00aaff', package: 'com.android.messaging' },
+      { name: 'Files', icon: 'fas fa-folder', color: '#ffaa00', package: 'com.android.documentsui' },
+      { name: 'Calculator', icon: 'fas fa-calculator', color: '#00ffff', package: 'com.android.calculator2' },
+      { name: 'Clock', icon: 'fas fa-clock', color: '#ffaa00', package: 'com.android.deskclock' },
+      { name: 'Gmail', icon: 'fas fa-envelope', color: '#EA4335', package: 'com.google.android.gm' }
+    ];
+
+    // Bengali/English app name mapping
+    const appAliases = {
+      'facebook': 'Facebook', 'ফেসবুক': 'Facebook',
+      'messenger': 'Messenger', 'মেসেঞ্জার': 'Messenger',
+      'imo': 'IMO', 'ইমো': 'IMO',
+      'whatsapp': 'WhatsApp', 'হোয়াটসঅ্যাপ': 'WhatsApp',
+      'youtube': 'YouTube', 'ইউটিউব': 'YouTube',
+      'tiktok': 'TikTok', 'টিকটক': 'TikTok',
+      'instagram': 'Instagram', 'ইনস্টাগ্রাম': 'Instagram',
+      'chrome': 'Chrome', 'ক্রোম': 'Chrome',
+      'camera': 'Camera', 'ক্যামেরা': 'Camera',
+      'gallery': 'Gallery', 'গ্যালারি': 'Gallery',
+      'maps': 'Maps', 'ম্যাপস': 'Maps',
+      'settings': 'Settings', 'সেটিংস': 'Settings',
+      'phone': 'Phone', 'ফোন': 'Phone',
+      'messages': 'Messages', 'মেসেজ': 'Messages',
+      'files': 'Files', 'ফাইল': 'Files',
+      'calculator': 'Calculator', 'ক্যালকুলেটর': 'Calculator',
+      'clock': 'Clock', 'ঘড়ি': 'Clock',
+      'gmail': 'Gmail', 'জিমেইল': 'Gmail'
+    };
+
+    // Bengali action verbs
+    const actionVerbs = ['খুলো', 'খুলে দাও', 'চালু করো', 'ওপেন করো', 'লঞ্চ করো', 'open', 'launch', 'start', 'run'];
+
+    // ============================================================
+    // INITIALIZE
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAppGrid(installedApps);
+      createParticles();
+    });
+
+    // ============================================================
+    // PARTICLE EFFECT
+    // ============================================================
+    function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 40; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 20 + 's';
+        particle.style.animationDuration = (15 + Math.random() * 15) + 's';
+        particle.style.width = particle.style.height = (1 + Math.random() * 4) + 'px';
+        particle.style.opacity = 0.2 + Math.random() * 0.5;
+        container.appendChild(particle);
+      }
+    }
+
+    // ============================================================
+    // RENDER APP GRID
+    // ============================================================
+    function renderAppGrid(apps) {
+      const grid = document.getElementById('appGrid');
+      grid.innerHTML =
